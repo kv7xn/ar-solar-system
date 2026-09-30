@@ -501,10 +501,10 @@
       <button id="start-btn" class="btn btn-primary" onclick="if(window.startARExperience) window.startARExperience();">
         <span>🚀 Start AR Experience</span>
       </button>
-      <button id="view-markers-btn" class="btn btn-secondary" onclick="if(window.openMarkersModal) window.openMarkersModal();">
+      <button id="view-markers-btn" class="btn btn-secondary" onclick="document.getElementById('markers-modal').classList.add('active');">
         <span>👁 View Target Markers</span>
       </button>
-      <button id="team-btn" class="btn btn-secondary" onclick="if(window.openTeamModal) window.openTeamModal();">
+      <button id="team-btn" class="btn btn-secondary" onclick="document.getElementById('team-modal').classList.add('active');">
         <span>👥 Project Team & Credits</span>
       </button>
     </div>
@@ -538,10 +538,10 @@
           <span id="rotation-icon">⏸️</span>
           <span id="rotation-text">Pause</span>
         </button>
-        <button id="hud-markers-btn" class="icon-btn" title="View target images">
+        <button id="hud-markers-btn" class="icon-btn" title="View target images" onclick="document.getElementById('markers-modal').classList.add('active');">
           <span>🖼 Markers</span>
         </button>
-        <button id="hud-team-btn" class="icon-btn" title="View project team" onclick="if(window.openTeamModal) window.openTeamModal();">
+        <button id="hud-team-btn" class="icon-btn" title="View project team" onclick="document.getElementById('team-modal').classList.add('active');">
           <span>👥 Team</span>
         </button>
       </div>
@@ -554,11 +554,11 @@
   </div>
 
   <!-- Marker Preview Modal -->
-  <div id="markers-modal">
+  <div id="markers-modal" onclick="if(event.target === this) this.classList.remove('active');">
     <div class="modal-card">
       <div class="modal-header">
         <h2 class="modal-title">AR Target Markers</h2>
-        <button id="close-markers-btn" class="modal-close" aria-label="Close">&times;</button>
+        <button id="close-markers-btn" class="modal-close" aria-label="Close" onclick="document.getElementById('markers-modal').classList.remove('active');">&times;</button>
       </div>
       <p class="modal-desc">
         Display these images on another phone, tablet, or monitor (or print them out). Then point your camera at them!
@@ -580,14 +580,15 @@
           <div class="marker-sub">Target Index 2</div>
         </div>
       </div>
+    </div>
   </div>
 
   <!-- Team & Acknowledgments Modal -->
-  <div id="team-modal">
+  <div id="team-modal" onclick="if(event.target === this) this.classList.remove('active');">
     <div class="modal-card" style="max-width: 620px;">
       <div class="modal-header">
         <h2 class="modal-title">✨ Project Team & Credits</h2>
-        <button id="close-team-btn" class="modal-close" aria-label="Close" onclick="if(window.closeTeamModal) window.closeTeamModal();">&times;</button>
+        <button id="close-team-btn" class="modal-close" aria-label="Close" onclick="document.getElementById('team-modal').classList.remove('active');">&times;</button>
       </div>
       <div class="team-subtitle">Augmented Reality Physics Project · Acknowledgment of Team Contributions</div>
 
