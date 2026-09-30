@@ -324,20 +324,26 @@ async function startARExperience() {
   loadingText.textContent = 'Preparing AR engine & camera…';
 
   try {
-    // 1. Initialize MindARThree with multi-tracking support
+    // 1. Initialize MindARThree with optimized mobile tracking parameters
     loadingText.textContent = 'Initializing AR Tracking Engine…';
     mindarInstance = new MindARThree({
       container:      document.getElementById('ar-container'),
       imageTargetSrc: './assets/targets.mind',
-      maxTrack:       3,
+      maxTrack:       2,
+      missTolerance:  8,
+      warmupTolerance: 5,
+      filterMinCF:    0.001,
+      filterBeta:     1000,
       uiLoading:      'no',
       uiScanning:     'no',
     });
 
     const { renderer, scene, camera } = mindarInstance;
 
-    // Ensure the WebGL renderer has a completely transparent clear color
-    // so the live camera video stream is 100% visible behind the 3D models
+    // Mobile GPU Optimization: Cap pixel ratio to 1.5 (prevents rendering 20M+ pixels on 3x high-DPI screens)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+
+    // Ensure transparent background for camera feed
     renderer.setClearColor(0x000000, 0);
     scene.background = null;
 
@@ -349,11 +355,13 @@ async function startARExperience() {
     dirLight.position.set(1.5, 3, 3);
     scene.add(dirLight);
 
-    // 3. Prepare 3D Models
-    loadingText.textContent = 'Loading 3D Solar Models…';
-    const sun   = await createSunModel();
-    const earth = await createEarthModel();
-    const blackhole = await createBlackholeModel();
+    // 3. Load 3D Models in parallel for fast loading
+    loadingText.textContent = 'Loading 3D Models…';
+    const [sun, earth, blackhole] = await Promise.all([
+      createSunModel(),
+      createEarthModel(),
+      createBlackholeModel()
+    ]);
 
     // 4. Attach to Anchor Targets
     // Target 0 = Sun, Target 1 = Earth, Target 2 = Black Hole
@@ -424,9 +432,9 @@ async function startARExperience() {
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
       if (isRotating) {
-        sun.animate(elapsed, delta);
-        earth.animate(elapsed, delta);
-        blackhole.animate(elapsed, delta);
+        if (sunAnchor.group.visible) sun.animate(elapsed, delta);
+        if (earthAnchor.group.visible) earth.animate(elapsed, delta);
+        if (blackholeAnchor.group.visible) blackhole.animate(elapsed, delta);
       }
       renderer.render(scene, camera);
     });
