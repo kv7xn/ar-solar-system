@@ -1,5 +1,5 @@
 /**
- * AR Solar System — MindAR.js + Three.js
+ * Wonders of the Universe — MindAR.js + Three.js
  *
  * Image Targets:
  *   Index 0: Sun marker   → 3D Sun with corona & self-rotation

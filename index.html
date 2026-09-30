@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AR Solar System · MindAR + Three.js</title>
+  <title>Wonders of the Universe — Web AR</title>
   <style>
     *, *::before, *::after {
       margin: 0; padding: 0; box-sizing: border-box;
@@ -59,6 +59,20 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+    }
+    .institute-logo-container {
+      margin-bottom: 12px;
+    }
+    .institute-logo {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 4px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(255, 215, 0, 0.35);
+      border: 2px solid rgba(255, 215, 0, 0.6);
+      transition: transform 0.2s ease;
     }
     .logo-badge {
       font-size: 54px;
@@ -396,8 +410,11 @@
 
   <!-- Splash / Start Screen -->
   <div id="splash-screen">
+    <div class="institute-logo-container">
+      <img src="assets/logo.png" alt="Institute Logo" class="institute-logo" />
+    </div>
     <div class="logo-badge">🪐</div>
-    <h1 class="splash-title">Solar System AR</h1>
+    <h1 class="splash-title">Wonders of the Universe</h1>
     <p class="splash-subtitle">
       Point your camera at the <strong>Sun</strong>, <strong>Earth</strong>, or <strong>Black Hole</strong> target images to reveal animated 3D celestial models anchored to them.
     </p>
