@@ -6,9 +6,9 @@
  *   Index 1: Earth marker → 3D Earth with 23.5° axial tilt, self-rotation, & orbiting Moon
  */
 
-import * as THREE from 'three';
-import { MindARThree } from 'mindar-image-three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
+import { MindARThree } from 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js';
 
 /* ── DOM References ─────────────────────────────────────────── */
 const splashScreen    = document.getElementById('splash-screen');
@@ -89,7 +89,7 @@ async function createSunModel() {
   let sunMesh = null;
 
   try {
-    const model = await loadGLB('assets/sun.glb');
+    const model = await loadGLB('./assets/sun.glb');
 
     // 1. Calculate unscaled bounding box
     const box = new THREE.Box3().setFromObject(model);
@@ -152,7 +152,7 @@ async function createEarthModel() {
   let mixer = null;
 
   try {
-    const model = await loadGLB('assets/earth.glb');
+    const model = await loadGLB('./assets/earth.glb');
 
     // 1. Calculate unscaled bounding box
     const box = new THREE.Box3().setFromObject(model);
@@ -226,7 +226,7 @@ async function createBlackholeModel() {
   let blackholeMesh = null;
 
   try {
-    const model = await loadGLB('assets/blackhole.glb');
+    const model = await loadGLB('./assets/blackhole.glb');
 
     // 1. Calculate unscaled bounding box
     const box = new THREE.Box3().setFromObject(model);
@@ -457,7 +457,15 @@ async function startARExperience() {
   }
 }
 
-/* ── Bind Start Button ──────────────────────────────────────── */
-startBtn?.addEventListener('click', () => {
+/* ── Expose globally for inline and mobile triggers ─────────── */
+window.startARExperience = startARExperience;
+window.openMarkersModal  = openMarkersModal;
+window.closeMarkersModal = closeMarkersModal;
+
+startBtn?.addEventListener('click', startARExperience);
+startBtn?.addEventListener('touchend', (e) => {
+  e.preventDefault();
   startARExperience();
 });
+
+console.log('✔ AR Application script ready.');

@@ -402,10 +402,10 @@
       Point your camera at the <strong>Sun</strong>, <strong>Earth</strong>, or <strong>Black Hole</strong> target images to reveal animated 3D celestial models anchored to them.
     </p>
     <div class="button-group">
-      <button id="start-btn" class="btn btn-primary">
+      <button id="start-btn" class="btn btn-primary" onclick="if(window.startARExperience) window.startARExperience();">
         <span>🚀 Start AR Experience</span>
       </button>
-      <button id="view-markers-btn" class="btn btn-secondary">
+      <button id="view-markers-btn" class="btn btn-secondary" onclick="if(window.openMarkersModal) window.openMarkersModal();">
         <span>👁 View Target Markers</span>
       </button>
     </div>
@@ -495,7 +495,21 @@
     </div>
   </div>
 
-  <!-- Import Map: Configures Three.js and MindAR with identical Three instance -->
+  <!-- Polyfill for older mobile browsers without native importmap support -->
+  <script async src="https://ga.jspm.io/npm:es-module-shims@1.7.0/dist/es-module-shims.js"></script>
+
+  <!-- Global script error catcher to diagnose mobile browser issues -->
+  <script>
+    window.addEventListener('error', function(e) {
+      console.error('AR error:', e);
+      var text = document.getElementById('loading-text');
+      if (text && e && e.message) {
+        text.innerHTML = '<span style="color:#f87171">Script error: ' + e.message + '</span>';
+      }
+    });
+  </script>
+
+  <!-- Import Map: Configures Three.js for MindAR internal imports -->
   <script type="importmap">
   {
     "imports": {
