@@ -23,6 +23,10 @@ const markersModal    = document.getElementById('markers-modal');
 const viewMarkersBtn  = document.getElementById('view-markers-btn');
 const hudMarkersBtn   = document.getElementById('hud-markers-btn');
 const closeMarkersBtn = document.getElementById('close-markers-btn');
+const teamModal       = document.getElementById('team-modal');
+const teamBtn         = document.getElementById('team-btn');
+const hudTeamBtn      = document.getElementById('hud-team-btn');
+const closeTeamBtn    = document.getElementById('close-team-btn');
 const errorModal      = document.getElementById('error-modal');
 const errorTitle      = document.getElementById('error-modal-title');
 const errorMsg        = document.getElementById('error-modal-msg');
@@ -54,12 +58,25 @@ function openMarkersModal() {
 function closeMarkersModal() {
   markersModal.classList.remove('active');
 }
+function openTeamModal() {
+  teamModal?.classList.add('active');
+}
+function closeTeamModal() {
+  teamModal?.classList.remove('active');
+}
 
 viewMarkersBtn?.addEventListener('click', openMarkersModal);
 hudMarkersBtn?.addEventListener('click', openMarkersModal);
 closeMarkersBtn?.addEventListener('click', closeMarkersModal);
 markersModal?.addEventListener('click', (e) => {
   if (e.target === markersModal) closeMarkersModal();
+});
+
+teamBtn?.addEventListener('click', openTeamModal);
+hudTeamBtn?.addEventListener('click', openTeamModal);
+closeTeamBtn?.addEventListener('click', closeTeamModal);
+teamModal?.addEventListener('click', (e) => {
+  if (e.target === teamModal) closeTeamModal();
 });
 
 errorRetryBtn?.addEventListener('click', () => {
@@ -469,6 +486,8 @@ async function startARExperience() {
 window.startARExperience = startARExperience;
 window.openMarkersModal  = openMarkersModal;
 window.closeMarkersModal = closeMarkersModal;
+window.openTeamModal     = openTeamModal;
+window.closeTeamModal    = closeTeamModal;
 
 startBtn?.addEventListener('click', startARExperience);
 startBtn?.addEventListener('touchend', (e) => {
