@@ -1,0 +1,12 @@
+{
+  "name": "ar-solar-system",
+  "version": "1.0.0",
+  "description": "Web-based Augmented Reality image tracking app using MindAR and Three.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "three": "^0.153.0"
+  }
+}

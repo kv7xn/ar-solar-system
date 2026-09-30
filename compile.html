@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MindAR 3-Target Compiler</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
+      color: #38bdf8;
+    }
+    p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .targets-list {
+      display: flex;
+      justify-content: space-around;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .target-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+    .target-preview img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      border: 2px solid #334155;
+    }
+    .progress-bar-container {
+      width: 100%;
+      height: 12px;
+      background: #334155;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      transition: width 0.2s ease;
+    }
+    #status {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      min-height: 20px;
+    }
+    .btn {
+      appearance: none;
+      border: none;
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+    .btn:hover { background: #7dd3fc; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled {
+      background: #475569;
+      cursor: not-allowed;
+      color: #94a3b8;
+    }
+    .btn-success {
+      background: #10b981;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>🪐 Compiling 3 Image Targets</h1>
+    <p>Compiling <strong>Sun (0)</strong>, <strong>Earth (1)</strong>, and <strong>Black Hole (2)</strong> into <code>targets.mind</code>.</p>
+
+    <div class="targets-list">
+      <div class="target-preview">
+        <img src="assets/sun.png" id="img-0" alt="Sun" />
+        <span>0: Sun</span>
+      </div>
+      <div class="target-preview">
+        <img src="assets/earth.png" id="img-1" alt="Earth" />
+        <span>1: Earth</span>
+      </div>
+      <div class="target-preview">
+        <img src="assets/blackhole.png" id="img-2" alt="Black Hole" />
+        <span>2: Black Hole</span>
+      </div>
+    </div>
+
+    <div class="progress-bar-container" id="progress-box">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="status">Ready to compile</div>
+
+    <button id="compile-btn" class="btn">🚀 Start Auto-Compile</button>
+  </div>
+
+  <script type="module">
+    import { Compiler } from 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js';
+
+    const compileBtn = document.getElementById('compile-btn');
+    const statusText = document.getElementById('status');
+    const progressBox = document.getElementById('progress-box');
+    const progressBar = document.getElementById('progress-bar');
+
+    async function loadImage(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
+    async function runCompile() {
+      compileBtn.disabled = true;
+      progressBox.style.display = 'block';
+      statusText.textContent = 'Loading source marker images…';
+
+      try {
+        const [img0, img1, img2] = await Promise.all([
+          loadImage('assets/sun.png'),
+          loadImage('assets/earth.png'),
+          loadImage('assets/blackhole.png')
+        ]);
+
+        statusText.textContent = 'Extracting feature points (WASM)…';
+        const compiler = new Compiler();
+
+        const dataList = await compiler.compileImageTargets([img0, img1, img2], (progress) => {
+          const pct = Math.round(progress);
+          progressBar.style.width = pct + '%';
+          statusText.textContent = `Compiling feature descriptors: ${pct}%`;
+        });
+
+        statusText.textContent = 'Exporting targets.mind binary…';
+        const exported = compiler.exportData();
+
+        statusText.textContent = 'Saving targets.mind to server…';
+        const res = await fetch('/save-targets', {
+          method: 'POST',
+          body: exported
+        });
+
+        if (res.ok) {
+          statusText.innerHTML = '🎉 <strong style="color:#34d399">Success!</strong> <code>targets.mind</code> with all 3 targets is saved!';
+          compileBtn.textContent = '🚀 Open AR App';
+          compileBtn.className = 'btn btn-success';
+          compileBtn.disabled = false;
+          compileBtn.onclick = () => window.location.href = '/';
+        } else {
+          throw new Error('Server returned ' + res.status);
+        }
+
+      } catch (err) {
+        console.error(err);
+        statusText.innerHTML = '<span style="color:#ef4444">Error: ' + err.message + '</span>';
+        compileBtn.disabled = false;
+        compileBtn.textContent = 'Retry Compile';
+      }
+    }
+
+    compileBtn.addEventListener('click', runCompile);
+
+    // Auto-start on load if requested via query param ?auto=1
+    if (new URLSearchParams(window.location.search).get('auto') === '1') {
+      runCompile();
+    }
+  </script>
+</body>
+</html>
