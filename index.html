@@ -83,18 +83,21 @@
       pointer-events: none;
     }
     .institute-logo-container {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
     .institute-logo {
-      width: 76px;
-      height: 76px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      object-fit: contain;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 4px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(255, 215, 0, 0.35);
-      border: 2px solid rgba(255, 215, 0, 0.6);
-      transition: transform 0.2s ease;
+      object-fit: cover;
+      box-shadow: 0 0 25px rgba(255, 200, 0, 0.55), 0 0 50px rgba(255, 140, 0, 0.3);
+      border: 3px solid rgba(255, 215, 0, 0.75);
+      background: #000;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .institute-logo:hover {
+      transform: scale(1.05);
     }
     .logo-badge {
       font-size: 54px;
