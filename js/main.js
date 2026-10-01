@@ -10,6 +10,15 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.m
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
 import { MindARThree } from 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js';
 
+// Polyfill outputEncoding to eliminate Three.js r153 console warnings caused by MindAR internals
+if (!('outputEncoding' in THREE.WebGLRenderer.prototype)) {
+  Object.defineProperty(THREE.WebGLRenderer.prototype, 'outputEncoding', {
+    get() { return this.outputColorSpace === THREE.SRGBColorSpace ? 3001 : 3000; },
+    set(val) { this.outputColorSpace = (val === 3001 ? THREE.SRGBColorSpace : THREE.NoColorSpace); },
+    configurable: true
+  });
+}
+
 /* ── DOM References ─────────────────────────────────────────── */
 const splashScreen    = document.getElementById('splash-screen');
 const startBtn        = document.getElementById('start-btn');
@@ -85,18 +94,28 @@ errorRetryBtn?.addEventListener('click', () => {
 });
 
 /* ── GLTF Model Loader Helper ───────────────────────────────── */
-function loadGLB(url) {
+function loadGLB(url, retries = 2) {
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
-    loader.load(
-      url,
-      (gltf) => {
-        gltf.scene.userData.animations = gltf.animations || [];
-        resolve(gltf.scene);
-      },
-      undefined,
-      (err) => reject(err)
-    );
+    function attempt(remaining) {
+      loader.load(
+        url,
+        (gltf) => {
+          gltf.scene.userData.animations = gltf.animations || [];
+          resolve(gltf.scene);
+        },
+        undefined,
+        (err) => {
+          if (remaining > 0) {
+            console.warn(`Retrying download for ${url} (${remaining} attempt remaining)...`);
+            setTimeout(() => attempt(remaining - 1), 1000);
+          } else {
+            reject(err);
+          }
+        }
+      );
+    }
+    attempt(retries);
   });
 }
 
@@ -157,7 +176,7 @@ async function createSunModel() {
   return {
     group: root,
     animate: (elapsed, delta) => {
-      root.rotation.y += 0.003;
+      root.rotation.y += 0.20 * (delta || 0.016);
     },
   };
 }
@@ -231,8 +250,9 @@ async function createEarthModel() {
   return {
     group: root,
     animate: (elapsed, delta) => {
-      if (mixer && delta) mixer.update(delta);
-      root.rotation.y += 0.003;
+      const dt = delta || 0.016;
+      if (mixer) mixer.update(Math.min(dt, 0.04));
+      root.rotation.y += 0.20 * dt;
     },
   };
 }
@@ -327,8 +347,8 @@ async function createBlackholeModel() {
 
   return {
     group: root,
-    animate: (elapsed) => {
-      root.rotation.y += 0.004;
+    animate: (elapsed, delta) => {
+      root.rotation.y += 0.15 * (delta || 0.016);
     },
   };
 }
@@ -446,7 +466,7 @@ async function startARExperience() {
     // 9. Animation & Render Loop
     const clock = new THREE.Clock();
     renderer.setAnimationLoop(() => {
-      const delta = clock.getDelta();
+      const delta = Math.min(clock.getDelta(), 0.05);
       const elapsed = clock.getElapsedTime();
       if (isRotating) {
         if (sunAnchor.group.visible) sun.animate(elapsed, delta);
