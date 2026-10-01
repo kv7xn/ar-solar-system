@@ -46,6 +46,7 @@ const rotationText      = document.getElementById('rotation-text');
 
 /* ── App State ──────────────────────────────────────────────── */
 let mindarInstance = null;
+let isStarting     = false;
 let isStarted      = false;
 let isRotating     = true;
 
@@ -355,7 +356,12 @@ async function createBlackholeModel() {
 
 /* ── Main Start AR Controller ───────────────────────────────── */
 async function startARExperience() {
-  if (isStarted) return;
+  if (isStarting || isStarted) return;
+  isStarting = true;
+  if (startBtn) startBtn.disabled = true;
+
+  const container = document.getElementById('ar-container');
+  if (container) container.innerHTML = '';
 
   loadingOverlay.classList.add('active');
   loadingText.textContent = 'Preparing AR engine & camera…';
@@ -459,6 +465,7 @@ async function startARExperience() {
 
     // 8. Transition UI
     isStarted = true;
+    isStarting = false;
     loadingOverlay.classList.remove('active');
     splashScreen.classList.add('hidden');
     hud.style.display = 'flex';
@@ -480,6 +487,8 @@ async function startARExperience() {
 
   } catch (err) {
     console.error('AR Initialization error:', err);
+    isStarting = false;
+    if (startBtn) startBtn.disabled = false;
     loadingOverlay.classList.remove('active');
 
     let title = 'Could Not Start Camera';
@@ -510,9 +519,5 @@ window.openTeamModal     = openTeamModal;
 window.closeTeamModal    = closeTeamModal;
 
 startBtn?.addEventListener('click', startARExperience);
-startBtn?.addEventListener('touchend', (e) => {
-  e.preventDefault();
-  startARExperience();
-});
 
 console.log('✔ AR Application script ready.');
