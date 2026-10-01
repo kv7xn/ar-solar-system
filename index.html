@@ -72,8 +72,9 @@
       z-index: 1000;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      background: radial-gradient(ellipse at 50% 20%, #0d1527 0%, #050711 60%, #010206 100%);
-      padding: 20px 16px;
+      background: linear-gradient(180deg, rgba(3, 7, 18, 0.40) 0%, rgba(3, 7, 18, 0.55) 50%, rgba(3, 7, 18, 0.78) 100%),
+                  url('assets/space-bg.jpg') center center / cover no-repeat;
+      padding: 24px 16px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       text-align: center;
@@ -90,20 +91,20 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       margin: auto;
-      padding: 12px 0;
+      padding: 16px 0;
     }
     .institute-logo-container {
-      margin-bottom: 8px;
+      margin-bottom: 16px;
     }
     .institute-logo {
-      width: 105px;
-      height: 105px;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       object-fit: cover;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.55), 0 0 50px rgba(217, 119, 6, 0.3);
-      border: 3px solid #f59e0b;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.65), 0 0 50px rgba(217, 119, 6, 0.35);
+      border: 3.5px solid #f59e0b;
       background: #000;
       display: block;
       transition: transform 0.3s ease;
@@ -111,32 +112,13 @@
     .institute-logo:hover {
       transform: scale(1.05);
     }
-    .solar-hero-container {
-      width: 100%;
-      max-width: 320px;
-      margin: 4px auto 10px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .solar-hero-img {
-      width: 100%;
-      max-width: 310px;
-      height: auto;
-      display: block;
-      filter: drop-shadow(0 0 16px rgba(251, 146, 60, 0.28));
-      animation: cosmicFloat 4.5s ease-in-out infinite;
-    }
-    @keyframes cosmicFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
     .splash-title {
-      font-size: 25px;
+      font-size: 26px;
       font-weight: 800;
       letter-spacing: -0.3px;
       line-height: 1.25;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
     }
     .title-warm {
       background: linear-gradient(90deg, #ff9f43 0%, #feca57 100%);
@@ -149,25 +131,26 @@
       -webkit-text-fill-color: transparent;
     }
     .splash-subtitle {
-      font-size: 13.5px;
-      color: #94a3b8;
-      max-width: 370px;
-      line-height: 1.55;
-      margin-bottom: 22px;
+      font-size: 14px;
+      color: #cbd5e1;
+      max-width: 380px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
     }
     .tag-group {
       font-weight: 600;
-      color: #94a3b8;
+      color: #cbd5e1;
     }
     .highlight-cs {
       color: #ff9f43;
       font-weight: 700;
-      text-shadow: 0 0 10px rgba(255, 159, 67, 0.4);
+      text-shadow: 0 0 10px rgba(255, 159, 67, 0.5);
     }
     .highlight-grp {
       color: #38bdf8;
       font-weight: 700;
-      text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
     }
     .button-group {
       display: flex;
@@ -216,11 +199,10 @@
     }
 
     @media (max-height: 680px) {
-      .institute-logo { width: 80px; height: 80px; }
-      .solar-hero-container { max-width: 240px; margin-bottom: 6px; }
-      .splash-title { font-size: 21px; margin-bottom: 6px; }
-      .splash-subtitle { font-size: 12.5px; margin-bottom: 16px; }
-      .btn { padding: 10px 16px; font-size: 13.5px; }
+      .institute-logo { width: 85px; height: 85px; }
+      .splash-title { font-size: 22px; margin-bottom: 8px; }
+      .splash-subtitle { font-size: 13px; margin-bottom: 18px; }
+      .btn { padding: 11px 18px; font-size: 13.5px; }
     }
 
     /* ── Loading Spinner Overlay ───────────────────────────────── */
@@ -574,9 +556,6 @@
     <div class="splash-content">
       <div class="institute-logo-container">
         <img src="assets/logo.png" alt="Institute Logo" class="institute-logo" />
-      </div>
-      <div class="solar-hero-container">
-        <img src="assets/solar-hero.png" alt="Solar System AR" class="solar-hero-img" />
       </div>
       <h1 class="splash-title">
         <span class="title-warm">Welcome to our</span> <span class="title-cool">AR Project</span>
