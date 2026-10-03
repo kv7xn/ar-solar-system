@@ -71,9 +71,9 @@
       position: fixed; inset: 0;
       z-index: 1000;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      align-items: center; justify-content: flex-start;
       background: linear-gradient(180deg, rgba(3, 7, 18, 0.40) 0%, rgba(3, 7, 18, 0.55) 50%, rgba(3, 7, 18, 0.78) 100%),
-                  url('assets/space-bg.jpg') center center / cover no-repeat;
+                  url('assets/space-bg.jpg') 55% 38% / cover no-repeat;
       padding: 24px 16px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
@@ -94,9 +94,11 @@
       max-width: 440px;
       margin: auto;
       padding: 16px 0;
+      padding-top: 6vh;
     }
     .institute-logo-container {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+      margin-top: -10px;
     }
     .institute-logo {
       width: 110px;
