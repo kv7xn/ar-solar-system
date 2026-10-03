@@ -72,9 +72,9 @@
       z-index: 1000;
       display: flex; flex-direction: column;
       align-items: center; justify-content: flex-start;
-      background: linear-gradient(180deg, rgba(3, 7, 18, 0.40) 0%, rgba(3, 7, 18, 0.55) 50%, rgba(3, 7, 18, 0.78) 100%),
-                  url('assets/space-bg.jpg') 55% 38% / cover no-repeat;
-      padding: 24px 16px;
+      background: linear-gradient(180deg, rgba(3, 7, 18, 0.35) 0%, rgba(3, 7, 18, 0.50) 50%, rgba(3, 7, 18, 0.75) 100%),
+                  url('assets/space-bg.jpg') center 54% / cover no-repeat;
+      padding: 16px 16px 24px 16px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       text-align: center;
@@ -93,16 +93,15 @@
       width: 100%;
       max-width: 440px;
       margin: auto;
-      padding: 16px 0;
-      padding-top: 6vh;
+      padding: 8px 0 20px 0;
     }
     .institute-logo-container {
-      margin-bottom: 12px;
-      margin-top: -10px;
+      margin-top: -35px;
+      margin-bottom: 28px;
     }
     .institute-logo {
-      width: 110px;
-      height: 110px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       object-fit: cover;
       box-shadow: 0 0 25px rgba(245, 158, 11, 0.65), 0 0 50px rgba(217, 119, 6, 0.35);
@@ -201,7 +200,8 @@
     }
 
     @media (max-height: 680px) {
-      .institute-logo { width: 85px; height: 85px; }
+      .institute-logo-container { margin-top: -15px; margin-bottom: 18px; }
+      .institute-logo { width: 80px; height: 80px; }
       .splash-title { font-size: 22px; margin-bottom: 8px; }
       .splash-subtitle { font-size: 13px; margin-bottom: 18px; }
       .btn { padding: 11px 18px; font-size: 13.5px; }
