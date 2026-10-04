@@ -340,6 +340,70 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
+    /* ── Floating Vertical Zoom Controls ───────────────────────── */
+    .hud-zoom-bar {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 8px 6px;
+      border-radius: 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+      z-index: 550;
+    }
+    .zoom-btn {
+      appearance: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .zoom-btn:hover {
+      background: rgba(56, 189, 248, 0.35);
+      transform: scale(1.08);
+    }
+    .zoom-btn:active {
+      transform: scale(0.92);
+      background: rgba(56, 189, 248, 0.5);
+    }
+    .zoom-indicator {
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 0.5px;
+      user-select: none;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .zoom-indicator:hover {
+      background: rgba(56, 189, 248, 0.2);
+      color: #7dd3fc;
+    }
+    .zoom-indicator:active {
+      transform: scale(0.95);
+    }
+
     /* ── Markers Modal ─────────────────────────────────────────── */
     #markers-modal {
       position: fixed; inset: 0;
@@ -623,6 +687,18 @@
       <div class="instruction-pill">
         Point camera at Sun, Earth, or Black Hole marker image
       </div>
+    </div>
+    <!-- Floating Vertical Zoom Controls -->
+    <div class="hud-zoom-bar">
+      <button id="zoom-in-btn" class="zoom-btn" title="Zoom In 3D Models" aria-label="Zoom In">
+        <span>➕</span>
+      </button>
+      <div id="zoom-indicator" class="zoom-indicator" title="Click to reset zoom to 1.0x" aria-label="Reset Zoom">
+        <span id="zoom-text">1.0x</span>
+      </div>
+      <button id="zoom-out-btn" class="zoom-btn" title="Zoom Out 3D Models" aria-label="Zoom Out">
+        <span>➖</span>
+      </button>
     </div>
   </div>
 

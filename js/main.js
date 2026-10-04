@@ -43,12 +43,44 @@ const errorRetryBtn   = document.getElementById('error-retry-btn');
 const rotationToggleBtn = document.getElementById('rotation-toggle-btn');
 const rotationIcon      = document.getElementById('rotation-icon');
 const rotationText      = document.getElementById('rotation-text');
+const zoomInBtn         = document.getElementById('zoom-in-btn');
+const zoomOutBtn        = document.getElementById('zoom-out-btn');
+const zoomIndicator     = document.getElementById('zoom-indicator');
+const zoomText          = document.getElementById('zoom-text');
 
 /* ── App State ──────────────────────────────────────────────── */
 let mindarInstance = null;
 let isStarting     = false;
 let isStarted      = false;
 let isRotating     = true;
+
+let currentZoom       = 1.0;
+const MIN_ZOOM        = 0.35;
+const MAX_ZOOM        = 3.5;
+let activeModelGroups = [];
+
+function applyZoom(newZoom) {
+  currentZoom = Math.min(Math.max(newZoom, MIN_ZOOM), MAX_ZOOM);
+  const rounded = Math.round(currentZoom * 100) / 100;
+  activeModelGroups.forEach((grp) => {
+    if (grp) grp.scale.setScalar(rounded);
+  });
+  if (zoomText) {
+    zoomText.textContent = `${rounded.toFixed(1)}x`;
+  }
+}
+
+zoomInBtn?.addEventListener('click', () => {
+  applyZoom(currentZoom + 0.25);
+});
+
+zoomOutBtn?.addEventListener('click', () => {
+  applyZoom(currentZoom - 0.25);
+});
+
+zoomIndicator?.addEventListener('click', () => {
+  applyZoom(1.0);
+});
 
 rotationToggleBtn?.addEventListener('click', () => {
   isRotating = !isRotating;
@@ -417,6 +449,10 @@ async function startARExperience() {
     const blackholeAnchor = mindarInstance.addAnchor(2);
     blackholeAnchor.group.add(blackhole.group);
 
+    // Register models for zoom scaling
+    activeModelGroups = [sun.group, earth.group, blackhole.group];
+    applyZoom(currentZoom);
+
     // 5. Track Detection Events
     sunAnchor.onTargetFound = () => {
       badgeSun.classList.add('active');
@@ -519,5 +555,46 @@ window.openTeamModal     = openTeamModal;
 window.closeTeamModal    = closeTeamModal;
 
 startBtn?.addEventListener('click', startARExperience);
+
+/* ── Interactive Zoom Gestures ───────────────────────────────── */
+// 1. Mobile Multi-Touch Pinch-to-Zoom
+let initialPinchDist = null;
+let initialPinchZoom = 1.0;
+
+window.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 2 && isStarted) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    initialPinchDist = Math.hypot(dx, dy);
+    initialPinchZoom = currentZoom;
+  }
+}, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 2 && initialPinchDist && isStarted) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.hypot(dx, dy);
+    if (dist > 10) {
+      const scaleFactor = dist / initialPinchDist;
+      applyZoom(initialPinchZoom * scaleFactor);
+    }
+  }
+}, { passive: true });
+
+window.addEventListener('touchend', (e) => {
+  if (e.touches.length < 2) {
+    initialPinchDist = null;
+  }
+}, { passive: true });
+
+// 2. Desktop Mouse Wheel Zoom
+window.addEventListener('wheel', (e) => {
+  if (!isStarted) return;
+  // Ignore scrolling inside open modals
+  if (markersModal?.classList.contains('active') || teamModal?.classList.contains('active') || errorModal?.classList.contains('active')) return;
+  const delta = -Math.sign(e.deltaY) * 0.15;
+  applyZoom(currentZoom + delta);
+}, { passive: true });
 
 console.log('✔ AR Application script ready.');
