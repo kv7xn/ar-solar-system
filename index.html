@@ -55,11 +55,6 @@
     function openInfoFor(objKey) {
       openInfoModal(objKey);
     }
-    function selectCelestialObject(objKey) {
-      if (window.switchCelestialObject) {
-        window.switchCelestialObject(objKey);
-      }
-    }
   </script>
   <style>
     *, *::before, *::after {
@@ -664,49 +659,13 @@
       font-weight: 500;
       letter-spacing: 0.3px;
     }
-    /* Object Switcher Pills (Sun, Earth, Black Hole) */
-    .object-switcher {
-      display: flex;
-      gap: 6px;
-      margin: 12px 0 10px 0;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 4px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .obj-tab-btn {
-      flex: 1;
-      appearance: none;
-      border: none;
-      background: transparent;
-      color: #94a3b8;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 7px 8px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.2s ease;
-    }
-    .obj-tab-btn:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .obj-tab-btn.active {
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.25));
-      border: 1px solid rgba(56, 189, 248, 0.5);
-      color: #38bdf8;
-      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.25);
-    }
     /* Topic Selector Tabs */
     .topic-tabs {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       overflow-x: auto;
-      padding: 4px 2px 10px 2px;
+      margin: 14px 0 10px 0;
+      padding: 2px 2px 8px 2px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
@@ -954,19 +913,6 @@
           <div class="info-subtitle">Engineering Physics | First Year B.Tech Project</div>
         </div>
         <button id="close-info-btn" class="modal-close" aria-label="Close" onclick="closeInfoModal();">&times;</button>
-      </div>
-
-      <!-- Celestial Object Switcher -->
-      <div class="object-switcher">
-        <button id="obj-tab-sun" class="obj-tab-btn" onclick="selectCelestialObject('sun');">
-          <span>☀</span> <span>Sun</span>
-        </button>
-        <button id="obj-tab-earth" class="obj-tab-btn active" onclick="selectCelestialObject('earth');">
-          <span>🌍</span> <span>Earth</span>
-        </button>
-        <button id="obj-tab-blackhole" class="obj-tab-btn" onclick="selectCelestialObject('blackhole');">
-          <span>🕳️</span> <span>Black Hole</span>
-        </button>
       </div>
 
       <!-- Topic-wise Switcher Tabs -->

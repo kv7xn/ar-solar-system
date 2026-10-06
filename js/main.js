@@ -367,14 +367,6 @@ function renderInfoModal() {
     infoModalTitle.innerHTML = `<span>${data.icon}</span> <span>${data.name} · Physics Guide</span>`;
   }
 
-  ['sun', 'earth', 'blackhole'].forEach((key) => {
-    const tabBtn = document.getElementById(`obj-tab-${key}`);
-    if (tabBtn) {
-      if (key === currentCelestialKey) tabBtn.classList.add('active');
-      else tabBtn.classList.remove('active');
-    }
-  });
-
   if (topicTabsContainer) {
     topicTabsContainer.innerHTML = data.topics.map((t) => `
       <button class="topic-tab-btn ${t.id === currentTopicId ? 'active' : ''}" onclick="selectTopic('${t.id}')">
@@ -394,9 +386,9 @@ function openInfoModal(objKey, topicId) {
   if (objKey && CELESTIAL_DATA[objKey]) {
     currentCelestialKey = objKey;
   }
-  if (topicId) {
+  if (topicId && CELESTIAL_DATA[currentCelestialKey].topics.find((t) => t.id === topicId)) {
     currentTopicId = topicId;
-  } else if (!CELESTIAL_DATA[currentCelestialKey].topics.find((t) => t.id === currentTopicId)) {
+  } else {
     currentTopicId = 'overview';
   }
   renderInfoModal();
@@ -407,14 +399,6 @@ function openInfoModal(objKey, topicId) {
 
 function closeInfoModal() {
   infoModal?.classList.remove('active');
-}
-
-function selectCelestialObject(objKey) {
-  if (CELESTIAL_DATA[objKey]) {
-    currentCelestialKey = objKey;
-    currentTopicId = 'overview';
-    renderInfoModal();
-  }
 }
 
 function selectTopic(topicId) {
@@ -887,12 +871,10 @@ window.openTeamModal           = openTeamModal;
 window.closeTeamModal          = closeTeamModal;
 window.openInfoModal           = openInfoModal;
 window.closeInfoModal          = closeInfoModal;
-window.selectCelestialObject   = selectCelestialObject;
 window.selectTopic             = selectTopic;
 window.openCurrentInfoModal    = openCurrentInfoModal;
 window.openInfoFor             = openInfoFor;
 window.showCelestialInfo       = openInfoModal;
-window.switchCelestialObject   = selectCelestialObject;
 window.showCurrentDetectedInfo = openCurrentInfoModal;
 
 startBtn?.addEventListener('click', startARExperience);
