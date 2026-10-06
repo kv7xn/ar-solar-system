@@ -8,7 +8,9 @@
     function openMarkersModal() {
       var t = document.getElementById('team-modal');
       var m = document.getElementById('markers-modal');
+      var i = document.getElementById('info-modal');
       if (t) t.classList.remove('active');
+      if (i) i.classList.remove('active');
       if (m) m.classList.add('active');
     }
     function closeMarkersModal() {
@@ -18,12 +20,45 @@
     function openTeamModal() {
       var t = document.getElementById('team-modal');
       var m = document.getElementById('markers-modal');
+      var i = document.getElementById('info-modal');
       if (m) m.classList.remove('active');
+      if (i) i.classList.remove('active');
       if (t) t.classList.add('active');
     }
     function closeTeamModal() {
       var t = document.getElementById('team-modal');
       if (t) t.classList.remove('active');
+    }
+    function openInfoModal(objKey, topicId) {
+      var t = document.getElementById('team-modal');
+      var m = document.getElementById('markers-modal');
+      if (m) m.classList.remove('active');
+      if (t) t.classList.remove('active');
+      if (window.showCelestialInfo) {
+        window.showCelestialInfo(objKey, topicId);
+      } else {
+        var modal = document.getElementById('info-modal');
+        if (modal) modal.classList.add('active');
+      }
+    }
+    function closeInfoModal() {
+      var modal = document.getElementById('info-modal');
+      if (modal) modal.classList.remove('active');
+    }
+    function openCurrentInfoModal() {
+      if (window.showCurrentDetectedInfo) {
+        window.showCurrentDetectedInfo();
+      } else {
+        openInfoModal('earth');
+      }
+    }
+    function openInfoFor(objKey) {
+      openInfoModal(objKey);
+    }
+    function selectCelestialObject(objKey) {
+      if (window.switchCelestialObject) {
+        window.switchCelestialObject(objKey);
+      }
     }
   </script>
   <style>
@@ -569,6 +604,208 @@
       line-height: 1.5;
     }
 
+    /* ── 3D Celestial Information Menu Modal ────────────────────── */
+    #info-modal {
+      position: fixed; inset: 0;
+      z-index: 2100;
+      display: none;
+      align-items: center; justify-content: center;
+      background: rgba(4, 7, 18, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 16px;
+      animation: modalFadeIn 0.25s ease;
+    }
+    #info-modal.active {
+      display: flex;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .info-card {
+      background: linear-gradient(170deg, rgba(15, 23, 42, 0.96) 0%, rgba(10, 15, 30, 0.98) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 22px;
+      padding: 20px 22px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(56, 189, 248, 0.15);
+      position: relative;
+    }
+    .info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .info-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+    }
+    .info-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-subtitle {
+      font-size: 11.5px;
+      color: #94a3b8;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    /* Object Switcher Pills (Sun, Earth, Black Hole) */
+    .object-switcher {
+      display: flex;
+      gap: 6px;
+      margin: 12px 0 10px 0;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .obj-tab-btn {
+      flex: 1;
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+    .obj-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .obj-tab-btn.active {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.25));
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.25);
+    }
+    /* Topic Selector Tabs */
+    .topic-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px 10px 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .topic-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .topic-tab-btn {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(30, 41, 59, 0.65);
+      color: #cbd5e1;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .topic-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+    .topic-tab-btn.active {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #0f172a;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
+    }
+    /* Topic Content Body */
+    .info-body {
+      overflow-y: auto;
+      max-height: 52vh;
+      padding-right: 4px;
+      margin-top: 4px;
+      color: #e2e8f0;
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: left;
+    }
+    .info-body::-webkit-scrollbar {
+      width: 5px;
+    }
+    .info-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    .info-section {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .info-section-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fcd34d;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .info-badge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .info-stat-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .stat-val {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    .formula-box {
+      background: rgba(15, 23, 42, 0.85);
+      border-left: 3px solid #f59e0b;
+      padding: 8px 12px;
+      border-radius: 0 8px 8px 0;
+      font-family: monospace, ui-monospace, sans-serif;
+      color: #fde68a;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
     /* ── Error Banner Dialog ───────────────────────────────────── */
     #error-modal {
       position: fixed; inset: 0;
@@ -657,20 +894,24 @@
   <div id="hud" style="display: none;">
     <div class="hud-top">
       <div class="target-badges">
-        <div id="badge-sun" class="badge">
+        <div id="badge-sun" class="badge" title="Tap to view Sun physics info" onclick="openInfoFor('sun');" style="cursor: pointer;">
           <span class="dot"></span>
           <span>☀ Sun: Searching</span>
         </div>
-        <div id="badge-earth" class="badge">
+        <div id="badge-earth" class="badge" title="Tap to view Earth physics info" onclick="openInfoFor('earth');" style="cursor: pointer;">
           <span class="dot"></span>
           <span>🌍 Earth: Searching</span>
         </div>
-        <div id="badge-blackhole" class="badge">
+        <div id="badge-blackhole" class="badge" title="Tap to view Black Hole physics info" onclick="openInfoFor('blackhole');" style="cursor: pointer;">
           <span class="dot"></span>
           <span>🕳️ Black Hole: Searching</span>
         </div>
       </div>
       <div class="hud-controls">
+        <button id="hud-info-btn" class="icon-btn" title="View 3D Model Physics Information" onclick="openCurrentInfoModal();">
+          <span>ℹ️</span>
+          <span>Info</span>
+        </button>
         <button id="rotation-toggle-btn" class="icon-btn" title="Pause or resume 3D model rotation">
           <span id="rotation-icon">⏸️</span>
           <span id="rotation-text">Pause</span>
@@ -684,7 +925,7 @@
       </div>
     </div>
     <div class="hud-bottom">
-      <div class="instruction-pill">
+      <div id="hud-instruction" class="instruction-pill">
         Point camera at Sun, Earth, or Black Hole marker image
       </div>
     </div>
@@ -699,6 +940,44 @@
       <button id="zoom-out-btn" class="zoom-btn" title="Zoom Out 3D Models" aria-label="Zoom Out">
         <span>➖</span>
       </button>
+    </div>
+  </div>
+
+  <!-- 3D Celestial Information Menu Modal -->
+  <div id="info-modal" onclick="if(event.target === this) closeInfoModal();">
+    <div class="info-card">
+      <div class="info-header">
+        <div class="info-title-wrap">
+          <div id="info-modal-title" class="info-title">
+            <span>🌍</span> <span>Earth · Physics Guide</span>
+          </div>
+          <div class="info-subtitle">Engineering Physics | First Year B.Tech Project</div>
+        </div>
+        <button id="close-info-btn" class="modal-close" aria-label="Close" onclick="closeInfoModal();">&times;</button>
+      </div>
+
+      <!-- Celestial Object Switcher -->
+      <div class="object-switcher">
+        <button id="obj-tab-sun" class="obj-tab-btn" onclick="selectCelestialObject('sun');">
+          <span>☀</span> <span>Sun</span>
+        </button>
+        <button id="obj-tab-earth" class="obj-tab-btn active" onclick="selectCelestialObject('earth');">
+          <span>🌍</span> <span>Earth</span>
+        </button>
+        <button id="obj-tab-blackhole" class="obj-tab-btn" onclick="selectCelestialObject('blackhole');">
+          <span>🕳️</span> <span>Black Hole</span>
+        </button>
+      </div>
+
+      <!-- Topic-wise Switcher Tabs -->
+      <div id="topic-tabs-container" class="topic-tabs">
+        <!-- Populated dynamically via JavaScript -->
+      </div>
+
+      <!-- Topic Content Area -->
+      <div id="info-modal-body" class="info-body">
+        <!-- Populated dynamically via JavaScript from Project PDF -->
+      </div>
     </div>
   </div>
 

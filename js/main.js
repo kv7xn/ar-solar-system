@@ -47,6 +47,13 @@ const zoomInBtn         = document.getElementById('zoom-in-btn');
 const zoomOutBtn        = document.getElementById('zoom-out-btn');
 const zoomIndicator     = document.getElementById('zoom-indicator');
 const zoomText          = document.getElementById('zoom-text');
+const infoModal          = document.getElementById('info-modal');
+const infoModalTitle     = document.getElementById('info-modal-title');
+const topicTabsContainer = document.getElementById('topic-tabs-container');
+const infoModalBody      = document.getElementById('info-modal-body');
+const hudInstruction    = document.getElementById('hud-instruction');
+const hudInfoBtn         = document.getElementById('hud-info-btn');
+const closeInfoBtn       = document.getElementById('close-info-btn');
 
 /* ── App State ──────────────────────────────────────────────── */
 let mindarInstance = null;
@@ -124,6 +131,308 @@ teamModal?.addEventListener('click', (e) => {
 errorRetryBtn?.addEventListener('click', () => {
   errorModal.classList.remove('active');
   startARExperience();
+});
+
+/* ── 3D Celestial Information Menu Controller ───────────────── */
+let currentCelestialKey = 'earth';
+let currentTopicId      = 'overview';
+let lastDetectedKey     = 'earth';
+
+const CELESTIAL_DATA = {
+  earth: {
+    name: "Earth",
+    icon: "🌍",
+    tagline: "Third Planet · Electromagnetism & Geophysics",
+    topics: [
+      {
+        id: "overview",
+        title: "📋 Overview & Stats",
+        html: `
+          <div class="info-badge-grid">
+            <div class="info-stat-card"><div class="stat-label">Mean Radius</div><div class="stat-val">~6,371 km</div></div>
+            <div class="info-stat-card"><div class="stat-label">Total Mass</div><div class="stat-val">5.97 × 10²⁴ kg</div></div>
+            <div class="info-stat-card"><div class="stat-label">Orbital Order</div><div class="stat-val">3rd from Sun</div></div>
+            <div class="info-stat-card"><div class="stat-label">Physics Focus</div><div class="stat-val">Electromagnetism & Dynamo</div></div>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">🌍 Planetary Overview</div>
+            <p>The Earth is the third planet from the Sun and the only known planet that supports life. It is a nearly spherical terrestrial planet with a mean radius of 6,371 km and a mass of 5.97 × 10²⁴ kg.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">💡 Why Study Earth in AR?</div>
+            <p>Earth acts as our home and provides a natural shield against harmful solar radiation through its magnetic field. In our WebAR model, the animated magnetic field loop allows you to directly explore this invisible field in 3D space.</p>
+          </div>
+        `
+      },
+      {
+        id: "structure",
+        title: "🌐 Internal Layers",
+        html: `
+          <div class="info-section">
+            <div class="info-section-title">1. Crust (5 to 70 km)</div>
+            <p>Thin, solid, rocky outer shell. Oceanic crust (5–10 km) is thinner and denser than continental crust (30–70 km). All terrestrial life exists on this thin outer skin.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">2. Mantle (~2,900 km thick)</div>
+            <p>Hot, dense semi-solid silicate rock that flows via extremely slow convection currents. This thermal circulation drives continental drift and plate tectonics.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">3. Outer Core (~2,200 km thick)</div>
+            <p>Composed of swirling liquid iron and nickel. Moving, electrically conducting molten metal acts as a planetary geodynamo, generating Earth's magnetic field.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">4. Inner Core (radius ~1,220 km)</div>
+            <p>Solid iron-nickel metallic sphere. Temperatures exceed 5,000 K, but immense gravitational pressure prevents the metals from melting.</p>
+          </div>
+        `
+      },
+      {
+        id: "magnetic",
+        title: "🧲 Magnetic Field",
+        html: `
+          <div class="info-section">
+            <div class="info-section-title">🧲 Geodynamo & Dipole Field</div>
+            <p>Moving, electrically conducting liquid iron in the outer core acts as a dynamo and produces a magnetic field that extends far into space. It resembles the field of a giant bar magnet (dipole).</p>
+            <div class="formula-box">Lorentz Force: F = q(v × B)</div>
+            <p>A moving charged particle in a magnetic field experiences a deflecting force perpendicular to both its velocity and field lines, causing solar particles to spiral safely along field lines.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">🛡️ Critical Roles of the Field</div>
+            <ul style="padding-left: 18px; margin: 0;">
+              <li><strong>Atmospheric Shield:</strong> Deflects high-speed charged solar wind, preventing it from stripping away our atmosphere.</li>
+              <li><strong>Auroras:</strong> Funneled energetic particles collide with oxygen and nitrogen in the upper atmosphere, creating the northern and southern lights.</li>
+              <li><strong>Navigation:</strong> Standard compass needles align with Earth's magnetic dipole toward the magnetic north.</li>
+            </ul>
+          </div>
+        `
+      }
+    ]
+  },
+  sun: {
+    name: "The Sun",
+    icon: "☀",
+    tagline: "G-Type Star · Nuclear Fusion & Plasma Physics",
+    topics: [
+      {
+        id: "overview",
+        title: "📋 Overview & Stats",
+        html: `
+          <div class="info-badge-grid">
+            <div class="info-stat-card"><div class="stat-label">Mass Share</div><div class="stat-val">99.8% of Solar System</div></div>
+            <div class="info-stat-card"><div class="stat-label">Solar Radius</div><div class="stat-val">~6.96 × 10⁸ m</div></div>
+            <div class="info-stat-card"><div class="stat-label">Surface Temp</div><div class="stat-val">~5,800 K</div></div>
+            <div class="info-stat-card"><div class="stat-label">Spectral Class</div><div class="stat-val">G-type Main-Sequence</div></div>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">☀ The Heart of the Solar System</div>
+            <p>The Sun is a G-type main-sequence star containing about 99.8% of the total mass of the solar system. It shines by converting hydrogen nuclei into helium through sustained nuclear fusion in its dense core.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">⚡ Nuclear Fusion Energy</div>
+            <p>Through Einstein's mass-energy equivalence (E = mc²), mass lost during fusion is released as radiant energy, traveling to the surface and illuminating the planets.</p>
+          </div>
+        `
+      },
+      {
+        id: "interior",
+        title: "🔥 Interior Layers",
+        html: `
+          <div class="info-section">
+            <div class="info-section-title">1. Core (~15,000,000 K)</div>
+            <p>The central and hottest engine of the Sun. Immense pressure and temperature drive hydrogen fusion into helium, generating vast amounts of energy.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">2. Radiative Zone</div>
+            <p>Surrounds the core and transfers energy outward primarily through photon radiation. Due to extreme plasma density, photons bounce for over 100,000 years to escape this zone.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">3. Convection Zone</div>
+            <p>Hot plasma boils upward toward the surface while cooler plasma sinks inward, establishing giant convection currents that carry thermal energy to the photosphere.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">4. Subsurface Flows</div>
+            <p>Large-scale circulating plasma streams beneath the surface linked directly to solar rotation and the 11-year magnetic cycle.</p>
+          </div>
+        `
+      },
+      {
+        id: "surface",
+        title: "☀️ Surface & Corona",
+        html: `
+          <div class="info-section">
+            <div class="info-section-title">5. Photosphere</div>
+            <p>The visible surface layer (~5,800 K) emitting the light that reaches Earth. Displays a bright bubbling granular appearance.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">6. Sunspots & Solar Flares</div>
+            <p><strong>Sunspots:</strong> Dark, relatively cooler regions (~3,800 K) caused by intense concentrated magnetic flux.<br><strong>Flares:</strong> Violent sudden releases of magnetic energy erupting into space.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">7. Chromosphere & Prominences</div>
+            <p><strong>Chromosphere:</strong> Reddish atmospheric layer above the photosphere visible during solar eclipses.<br><strong>Prominences:</strong> Giant glowing loops of hot plasma anchored to the surface by magnetic arches.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">8. Corona & Coronal Holes</div>
+            <p>The blisteringly hot outermost layer (>1,000,000 K) extending millions of kilometers into space. Coronal holes are cooler regions that launch the high-speed solar wind.</p>
+          </div>
+        `
+      }
+    ]
+  },
+  blackhole: {
+    name: "Black Hole",
+    icon: "🕳️",
+    tagline: "Extreme Gravity · General Relativity & Spacetime",
+    topics: [
+      {
+        id: "overview",
+        title: "📋 Overview & Gravity",
+        html: `
+          <div class="info-badge-grid">
+            <div class="info-stat-card"><div class="stat-label">Escape Velocity</div><div class="stat-val">> Speed of Light (c)</div></div>
+            <div class="info-stat-card"><div class="stat-label">Key Physics</div><div class="stat-val">General Relativity</div></div>
+            <div class="info-stat-card"><div class="stat-label">Formation</div><div class="stat-val">Stellar Core Collapse</div></div>
+            <div class="info-stat-card"><div class="stat-label">Boundary</div><div class="stat-val">Event Horizon</div></div>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">🕳️ What is a Black Hole?</div>
+            <p>A black hole is a region of spacetime where gravitational acceleration is so extreme that nothing—not even electromagnetic radiation such as light—can escape once it crosses the event horizon.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">🌌 Origin</div>
+            <p>Stellar black holes form when massive stars collapse at the end of their lives. Supermassive black holes (millions to billions of solar masses) sit anchored at the centers of most galaxies.</p>
+          </div>
+        `
+      },
+      {
+        id: "anatomy",
+        title: "🌀 Anatomy & Structure",
+        html: `
+          <div class="info-section">
+            <div class="info-section-title">1. Accretion Disc</div>
+            <p>Superheated gas and dust spiralling around the black hole at relativistic velocities. Strong friction heats matter to millions of degrees, radiating intense X-rays.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">2. Relativistic Jets</div>
+            <p>Collimated streams of ionizing particles and radiation ejected from the rotational poles at velocities close to the speed of light.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">3. Photon Sphere & ISCO</div>
+            <p><strong>Photon Sphere:</strong> Region where gravity is strong enough to bend light into unstable circular orbits.<br><strong>ISCO:</strong> Innermost Stable Circular Orbit; inside it, matter must spiral directly inward.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">4. Event Horizon & Singularity</div>
+            <p><strong>Event Horizon:</strong> The point of no return where escape speed equals c.<br><strong>Singularity:</strong> The theoretical central point where matter is crushed to infinitesimal volume and infinite density.</p>
+          </div>
+        `
+      },
+      {
+        id: "schwarzschild",
+        title: "📐 Schwarzschild Radius",
+        html: `
+          <div class="info-section">
+            <div class="info-section-title">📐 The Gravitational Radius Formula</div>
+            <p>For a non-rotating black hole of mass M, the Schwarzschild radius Rs is given by:</p>
+            <div class="formula-box">Rs = 2GM / c²</div>
+            <p style="font-size: 11.5px; color: #94a3b8;">Where G = 6.67 × 10⁻¹¹ N·m²/kg² and c = 3 × 10⁸ m/s. The radius grows in direct proportion to mass M.</p>
+          </div>
+          <div class="info-section">
+            <div class="info-section-title">📊 If Objects Were Squeezed Into Black Holes:</div>
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-top: 6px;">
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.15); text-align: left; color: #f59e0b;">
+                <th style="padding: 4px;">Object</th><th style="padding: 4px;">Mass</th><th style="padding: 4px;">Rs (Radius)</th>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <td style="padding: 5px;">🌍 Earth</td><td style="padding: 5px;">5.97 × 10²⁴ kg</td><td style="padding: 5px; color: #38bdf8;">about 9 mm (marble)</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <td style="padding: 5px;">☀ Sun</td><td style="padding: 5px;">1.99 × 10³⁰ kg</td><td style="padding: 5px; color: #38bdf8;">about 2.95 km (~3 km)</td>
+              </tr>
+              <tr>
+                <td style="padding: 5px;">10× Solar Mass</td><td style="padding: 5px;">2 × 10³¹ kg</td><td style="padding: 5px; color: #38bdf8;">about 30 km</td>
+              </tr>
+            </table>
+          </div>
+        `
+      }
+    ]
+  }
+};
+
+function renderInfoModal() {
+  const data = CELESTIAL_DATA[currentCelestialKey];
+  if (!data) return;
+
+  if (infoModalTitle) {
+    infoModalTitle.innerHTML = `<span>${data.icon}</span> <span>${data.name} · Physics Guide</span>`;
+  }
+
+  ['sun', 'earth', 'blackhole'].forEach((key) => {
+    const tabBtn = document.getElementById(`obj-tab-${key}`);
+    if (tabBtn) {
+      if (key === currentCelestialKey) tabBtn.classList.add('active');
+      else tabBtn.classList.remove('active');
+    }
+  });
+
+  if (topicTabsContainer) {
+    topicTabsContainer.innerHTML = data.topics.map((t) => `
+      <button class="topic-tab-btn ${t.id === currentTopicId ? 'active' : ''}" onclick="selectTopic('${t.id}')">
+        ${t.title}
+      </button>
+    `).join('');
+  }
+
+  if (infoModalBody) {
+    const activeTopic = data.topics.find((t) => t.id === currentTopicId) || data.topics[0];
+    infoModalBody.innerHTML = activeTopic.html;
+    infoModalBody.scrollTop = 0;
+  }
+}
+
+function openInfoModal(objKey, topicId) {
+  if (objKey && CELESTIAL_DATA[objKey]) {
+    currentCelestialKey = objKey;
+  }
+  if (topicId) {
+    currentTopicId = topicId;
+  } else if (!CELESTIAL_DATA[currentCelestialKey].topics.find((t) => t.id === currentTopicId)) {
+    currentTopicId = 'overview';
+  }
+  renderInfoModal();
+  infoModal?.classList.add('active');
+  markersModal?.classList.remove('active');
+  teamModal?.classList.remove('active');
+}
+
+function closeInfoModal() {
+  infoModal?.classList.remove('active');
+}
+
+function selectCelestialObject(objKey) {
+  if (CELESTIAL_DATA[objKey]) {
+    currentCelestialKey = objKey;
+    currentTopicId = 'overview';
+    renderInfoModal();
+  }
+}
+
+function selectTopic(topicId) {
+  currentTopicId = topicId;
+  renderInfoModal();
+}
+
+function openCurrentInfoModal() {
+  openInfoModal(lastDetectedKey || 'earth');
+}
+
+function openInfoFor(objKey) {
+  openInfoModal(objKey);
+}
+
+closeInfoBtn?.addEventListener('click', closeInfoModal);
+infoModal?.addEventListener('click', (e) => {
+  if (e.target === infoModal) closeInfoModal();
 });
 
 /* ── GLTF Model Loader Helper ───────────────────────────────── */
@@ -449,6 +758,20 @@ async function startARExperience() {
     const blackholeAnchor = mindarInstance.addAnchor(2);
     blackholeAnchor.group.add(blackhole.group);
 
+    // Helper to add invisible hit proxy sphere for easy tap/click detection
+    function addHitProxy(group, radius, key) {
+      const geo = new THREE.SphereGeometry(radius, 16, 16);
+      const mat = new THREE.MeshBasicMaterial({ visible: false, wireframe: false });
+      const proxy = new THREE.Mesh(geo, mat);
+      proxy.userData.celestialKey = key;
+      group.add(proxy);
+      group.userData.celestialKey = key;
+    }
+
+    addHitProxy(sun.group, 2.0, 'sun');
+    addHitProxy(earth.group, 1.8, 'earth');
+    addHitProxy(blackhole.group, 2.2, 'blackhole');
+
     // Register models for zoom scaling
     activeModelGroups = [sun.group, earth.group, blackhole.group];
     applyZoom(currentZoom);
@@ -457,28 +780,37 @@ async function startARExperience() {
     sunAnchor.onTargetFound = () => {
       badgeSun.classList.add('active');
       badgeSun.querySelector('span:last-child').textContent = '☀ Sun: Detected!';
+      lastDetectedKey = 'sun';
+      if (hudInstruction) hudInstruction.textContent = '☀ Sun detected! Tap 3D model for physics info';
     };
     sunAnchor.onTargetLost = () => {
       badgeSun.classList.remove('active');
       badgeSun.querySelector('span:last-child').textContent = '☀ Sun: Searching';
+      if (hudInstruction) hudInstruction.textContent = 'Point camera at Sun, Earth, or Black Hole marker image';
     };
 
     earthAnchor.onTargetFound = () => {
       badgeEarth.classList.add('active');
       badgeEarth.querySelector('span:last-child').textContent = '🌍 Earth: Detected!';
+      lastDetectedKey = 'earth';
+      if (hudInstruction) hudInstruction.textContent = '🌍 Earth detected! Tap 3D model for physics info';
     };
     earthAnchor.onTargetLost = () => {
       badgeEarth.classList.remove('active');
       badgeEarth.querySelector('span:last-child').textContent = '🌍 Earth: Searching';
+      if (hudInstruction) hudInstruction.textContent = 'Point camera at Sun, Earth, or Black Hole marker image';
     };
 
     blackholeAnchor.onTargetFound = () => {
       badgeBlackhole.classList.add('active');
       badgeBlackhole.querySelector('span:last-child').textContent = '🕳️ Black Hole: Detected!';
+      lastDetectedKey = 'blackhole';
+      if (hudInstruction) hudInstruction.textContent = '🕳️ Black Hole detected! Tap 3D model for physics info';
     };
     blackholeAnchor.onTargetLost = () => {
       badgeBlackhole.classList.remove('active');
       badgeBlackhole.querySelector('span:last-child').textContent = '🕳️ Black Hole: Searching';
+      if (hudInstruction) hudInstruction.textContent = 'Point camera at Sun, Earth, or Black Hole marker image';
     };
 
     // 6. Request camera and start tracking
@@ -548,13 +880,23 @@ async function startARExperience() {
 }
 
 /* ── Expose globally for inline and mobile triggers ─────────── */
-window.startARExperience = startARExperience;
-window.openMarkersModal  = openMarkersModal;
-window.closeMarkersModal = closeMarkersModal;
-window.openTeamModal     = openTeamModal;
-window.closeTeamModal    = closeTeamModal;
+window.startARExperience       = startARExperience;
+window.openMarkersModal        = openMarkersModal;
+window.closeMarkersModal       = closeMarkersModal;
+window.openTeamModal           = openTeamModal;
+window.closeTeamModal          = closeTeamModal;
+window.openInfoModal           = openInfoModal;
+window.closeInfoModal          = closeInfoModal;
+window.selectCelestialObject   = selectCelestialObject;
+window.selectTopic             = selectTopic;
+window.openCurrentInfoModal    = openCurrentInfoModal;
+window.openInfoFor             = openInfoFor;
+window.showCelestialInfo       = openInfoModal;
+window.switchCelestialObject   = selectCelestialObject;
+window.showCurrentDetectedInfo = openCurrentInfoModal;
 
 startBtn?.addEventListener('click', startARExperience);
+hudInfoBtn?.addEventListener('click', openCurrentInfoModal);
 
 /* ── Interactive Zoom Gestures ───────────────────────────────── */
 // 1. Mobile Multi-Touch Pinch-to-Zoom
@@ -592,9 +934,75 @@ window.addEventListener('touchend', (e) => {
 window.addEventListener('wheel', (e) => {
   if (!isStarted) return;
   // Ignore scrolling inside open modals
-  if (markersModal?.classList.contains('active') || teamModal?.classList.contains('active') || errorModal?.classList.contains('active')) return;
+  if (infoModal?.classList.contains('active') || markersModal?.classList.contains('active') || teamModal?.classList.contains('active') || errorModal?.classList.contains('active')) return;
   const delta = -Math.sign(e.deltaY) * 0.15;
   applyZoom(currentZoom + delta);
+}, { passive: true });
+
+/* ── 3D Model Tap Raycasting ─────────────────────────────────── */
+let pointerStartX = 0;
+let pointerStartY = 0;
+let pointerStartTime = 0;
+
+function handleModelRaycastTap(clientX, clientY) {
+  if (!isStarted || !mindarInstance || !mindarInstance.camera) return;
+  // Don't raycast if any modal is currently visible
+  if (infoModal?.classList.contains('active') || markersModal?.classList.contains('active') || teamModal?.classList.contains('active') || errorModal?.classList.contains('active')) return;
+
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  mouse.x = (clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, mindarInstance.camera);
+  const targets = activeModelGroups.filter(Boolean);
+  const intersects = raycaster.intersectObjects(targets, true);
+
+  if (intersects && intersects.length > 0) {
+    let hitObj = intersects[0].object;
+    let targetKey = hitObj.userData?.celestialKey;
+    if (!targetKey) {
+      let curr = hitObj;
+      while (curr) {
+        if (curr.userData?.celestialKey) {
+          targetKey = curr.userData.celestialKey;
+          break;
+        }
+        curr = curr.parent;
+      }
+    }
+    if (targetKey) {
+      console.log(`✔ Tapped 3D celestial model: ${targetKey}`);
+      openInfoModal(targetKey);
+    }
+  }
+}
+
+window.addEventListener('pointerdown', (e) => {
+  pointerStartX = e.clientX;
+  pointerStartY = e.clientY;
+  pointerStartTime = performance.now();
+}, { passive: true });
+
+window.addEventListener('pointerup', (e) => {
+  const dist = Math.hypot(e.clientX - pointerStartX, e.clientY - pointerStartY);
+  const elapsed = performance.now() - pointerStartTime;
+  // Accept genuine short taps / clicks (ignore drags and multi-touch gestures)
+  if (dist < 20 && elapsed < 450) {
+    // Ignore taps on UI controls, zoom bar, badges, and modals
+    if (e.target.closest && (
+      e.target.closest('.hud-controls') ||
+      e.target.closest('.hud-zoom-bar') ||
+      e.target.closest('.target-badges') ||
+      e.target.closest('.modal-card') ||
+      e.target.closest('.info-card') ||
+      e.target.closest('#splash-screen')
+    )) {
+      return;
+    }
+    handleModelRaycastTap(e.clientX, e.clientY);
+  }
 }, { passive: true });
 
 console.log('✔ AR Application script ready.');
